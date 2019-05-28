@@ -10,4 +10,4 @@ virtualenv venv
 
 ./tools/pip_install_editable.py certbot-ci
 
-pytest certbot-ci/certbot_integration_tests --numprocesses 4 --acme-server=pebble 
+pytest certbot-ci/certbot_integration_tests/certbot_tests --numprocesses 4 --acme-server=pebble 
