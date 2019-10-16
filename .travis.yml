@@ -10,7 +10,7 @@ before_install:
   # See https://github.com/lxc/lxd/issues/3421
   - sudo -E snap install --classic snapcraft || true
   - sudo -E snap install --classic snapcraft
-  - sudo -E apt-get -yq --no-install-suggests --no-install-recommends install nginx-light python3-venv
+  - sudo -E apt-get -yq --no-install-suggests --no-install-recommends install nginx-light python3-venv libssl-dev
   - sudo -E /etc/init.d/nginx stop
 install:
   - git clone https://github.com/certbot/certbot.git certbot --branch master
@@ -18,7 +18,7 @@ install:
 before_script:
   - snapcraft
 script:
-  - snap install --dangerous --classic *.snap
+  - sudo snap install --dangerous --classic *.snap
   - bash test.sh
 deploy:
   'on':
