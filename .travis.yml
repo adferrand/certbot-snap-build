@@ -3,6 +3,8 @@ arch:
   - amd64
   - arm64
 language: bash
+env:
+  - SNAPCRAFT_BUILD_ENVIRONMENT=host
 before_install:
   # Yes, we try to install snapcraft twice, as it is necessary for now on arm64!
   # See https://github.com/lxc/lxd/issues/3421
