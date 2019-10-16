@@ -1,18 +1,22 @@
+arch:
+  - amd64
+  - arm64
 language: python
 before_install:
+  # Yes, we try to install snapcraft twice, as it is necessary for now on arm64!
+  # See https://github.com/lxc/lxd/issues/3421
+  - sudo -E snap install --classic snapcraft || true
+  - sudo -E snap install --classic snapcraft
   - sudo -E apt-get -yq --no-install-suggests --no-install-recommends install nginx-light python3-venv
   - sudo -E /etc/init.d/nginx stop
 install:
-  - sudo /snap/bin/lxd.migrate -yes
-  - sudo /snap/bin/lxd waitready
-  - sudo /snap/bin/lxd init --auto
   - git clone https://github.com/certbot/certbot.git certbot --branch master
   - certbot/tools/strip_hashes.py certbot/letsencrypt-auto-source/pieces/dependency-requirements.txt > certbot/constraints.txt
 before_script:
-  - sudo snapcraft --use-lxd
+  - snapcraft
 script:
-  - sudo snap install --dangerous --classic *.snap
-  - sudo bash test.sh
+  - snap install --dangerous --classic *.snap
+  - bash test.sh
 deploy:
   'on':
     branch: master
@@ -24,10 +28,3 @@ notifications:
   email:
     recipients: [robie.basak@canonical.com]
     on_failure: change
-addons:
-  snaps:
-    - name: snapcraft
-      channel: stable
-      classic: true
-    - name: lxd
-      channel: stable
