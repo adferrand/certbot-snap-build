@@ -2,6 +2,7 @@ dist: bionic
 arch:
   - amd64
   - arm64
+  - armhf
 language: bash
 env:
   - SNAPCRAFT_BUILD_ENVIRONMENT=host
