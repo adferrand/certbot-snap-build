@@ -15,11 +15,10 @@ before_install:
 install:
   - git clone https://github.com/certbot/certbot.git certbot --branch v0.40.1
   - certbot/tools/strip_hashes.py certbot/letsencrypt-auto-source/pieces/dependency-requirements.txt > certbot/constraints.txt
-before_script:
-  - snapcraft
 script:
-  - sudo snap install --dangerous --classic *.snap
-  - bash test.sh
+  - snapcraft
+after_success:
+  - test "$TRAVIS_CPU_ARCH" = "amd64" && sudo ./test.sh
 deploy:
   'on':
     branch: master
