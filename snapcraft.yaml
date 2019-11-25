@@ -58,6 +58,7 @@ parts:
     override-pull: |
         snapcraftctl pull
         snapcraftctl set-version `cd $SNAPCRAFT_PART_SRC && git describe|sed s/^v//`
+    python-packages: ['wheel']
   certbot-apache:
     plugin: python
     source: certbot
@@ -66,7 +67,6 @@ parts:
     python-version: python3
     after: [python-augeas, certbot]
     stage-packages: [libaugeas0]
-    python-packages: ['git+https://github.com/certbot/certbot.git']  # workaround for #12
   certbot-nginx:
     plugin: python
     source: certbot
@@ -74,4 +74,3 @@ parts:
     constraints: [$SNAPCRAFT_PART_SRC/constraints.txt]
     python-version: python3
     after: [certbot]
-    python-packages: ['git+https://github.com/certbot/certbot.git']  # workaround for #12
