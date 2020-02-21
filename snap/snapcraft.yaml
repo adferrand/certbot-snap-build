@@ -37,52 +37,12 @@ apps:
         timer: 00:00~24:00/2
 
 parts:
-  python-augeas:
-    plugin: x-python
-    source: git://github.com/basak/python-augeas
-    source-branch: snap
-    python-version: python3
-    build-packages: [libaugeas-dev]
-  acme:
-    plugin: x-python
-    source: certbot
-    source-subdir: acme
-    constraints: [$SNAPCRAFT_PART_SRC/constraints.txt]
-    python-version: python3
   certbot:
-    plugin: x-python
+    plugin: python
     source: certbot
-    source-subdir: certbot
-    constraints: [$SNAPCRAFT_PART_SRC/constraints.txt]
-    python-version: python3
-    after: [acme]
+    override-build: |
+      python3 -m venv venv
+      venv/bin/pip install "${SNAPCRAFT_PART_SRC}/acme" "${SNAPCRAFT_PART_SRC}/certbot" "${SNAPCRAFT_PART_SRC}/certbot-apache" "${SNAPCRAFT_PART_SRC}/certbot-nginx"
     override-pull: |
         snapcraftctl pull
-        snapcraftctl set-version `cd $SNAPCRAFT_PART_SRC && git describe|sed s/^v//`
-    # Workaround for lack of site-packages leading to empty sitecustomize.py
-    stage:
-      - -usr/lib/python3.6/sitecustomize.py
-  certbot-apache:
-    plugin: x-python
-    source: certbot
-    source-subdir: certbot-apache
-    constraints: [$SNAPCRAFT_PART_SRC/constraints.txt]
-    python-version: python3
-    after: [python-augeas, certbot]
-    stage-packages: [libaugeas0]
-    stage:
-      # Prefer cffi
-      - -lib/python3.6/site-packages/augeas.py
-  certbot-nginx:
-    plugin: x-python
-    source: certbot
-    source-subdir: certbot-nginx
-    constraints: [$SNAPCRAFT_PART_SRC/constraints.txt]
-    python-version: python3
-    # This is the last step, compile pycache now as there should be no conflicts.
-    override-prime: |
-      snapcraftctl prime
-      ./usr/bin/python3 -m compileall -q .
-    # After certbot-apache to not rebuild duplicates (essentially sharing what was already staged,
-    # like zope)
-    after: [certbot-apache]
+        snapcraftctl set-version $( grep "__version__" "${SNAPCRAFT_PART_SRC}/certbot/certbot/__init__.py" | sed -E "s/^__version__ = '(.*)'\$/\1/" )
